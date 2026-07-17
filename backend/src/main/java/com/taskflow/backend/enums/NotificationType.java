@@ -1,0 +1,12 @@
+package com.taskflow.backend.enums;
+
+public enum NotificationType {
+    TASK_ASSIGNED,
+    TASK_STATUS_CHANGED,
+    TASK_DUE_SOON,
+    TASK_COMMENT_ADDED,
+    COMMENT_MENTION,
+    PROJECT_MEMBER_ADDED,
+    PROJECT_ROLE_CHANGED,
+    ORG_INVITATION_ACCEPTED
+}
