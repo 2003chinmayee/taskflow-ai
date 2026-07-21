@@ -16,7 +16,7 @@ CREATE TABLE tasks (
                        CONSTRAINT fk_task_project FOREIGN KEY (project_id) REFERENCES projects(id),
                        CONSTRAINT fk_task_assignee FOREIGN KEY (assignee_id) REFERENCES users(id),
                        CONSTRAINT fk_task_created_by FOREIGN KEY (created_by) REFERENCES users(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE INDEX idx_task_project_id ON tasks(project_id);
 CREATE INDEX idx_task_status ON tasks(status);

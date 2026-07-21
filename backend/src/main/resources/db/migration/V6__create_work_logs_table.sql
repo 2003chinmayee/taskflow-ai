@@ -15,7 +15,7 @@ CREATE TABLE work_logs (
 
                            CONSTRAINT fk_worklog_task FOREIGN KEY (task_id) REFERENCES tasks(id),
                            CONSTRAINT fk_worklog_user FOREIGN KEY (user_id) REFERENCES users(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE INDEX idx_worklog_task_id ON work_logs(task_id);
 CREATE INDEX idx_worklog_project_id ON work_logs(project_id);
