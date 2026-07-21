@@ -15,7 +15,7 @@ const apiClient = axios.create({
   // All requests automatically start with this URL
   // So axios.get('/auth/login') becomes:
   // GET http://localhost:8080/api/v1/auth/login
-  baseURL: 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_URL,
 
   headers: {
     'Content-Type': 'application/json',
