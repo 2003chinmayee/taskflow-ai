@@ -23,6 +23,7 @@ import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
 import OrganizationMembersPage from '../pages/organization/OrganizationMembersPage';
 import NotificationsPage from '../pages/notifications/NotificationsPage';
 import MyTasksPage from '../pages/tasks/MyTasksPage';
+import OnboardingPage from '../pages/onboarding/OnboardingPage';
 
 // ─── ProtectedRoute component ─────────────────────────────────────
 // children: React.ReactNode means this component wraps other components
@@ -147,6 +148,16 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <OnboardingPage />
+            </ProtectedRoute>
+          }
+        />
+        
         {/* Catch all - redirect to dashboard */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
