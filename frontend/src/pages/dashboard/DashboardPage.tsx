@@ -1,8 +1,6 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/auth.store";
 import { useOrgStore } from "../../store/orgStore";
-import { organizationApi } from "../../api/organizationApi";
 import { useDashboard } from "../../hooks/useDashboard";
 import WelcomeHeader from "../../components/dashboard/WelcomeHeader";
 import OverviewStats from "../../components/dashboard/OverviewStats";
@@ -14,7 +12,7 @@ import ErrorBoundary from "../../components/common/ErrorBoundary";
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
-  const { currentOrg, setCurrentOrg } = useOrgStore();
+  const currentOrg = useOrgStore((s) => s.currentOrg)!;
   const navigate = useNavigate();
 
   const {
@@ -24,28 +22,7 @@ export default function DashboardPage() {
     todaysFocus, isLoadingTodaysFocus,
   } = useDashboard();
 
-  useEffect(() => {
-    if (currentOrg) return;
-    organizationApi.list().then((res) => {
-      const orgs = res.data.data;
-      if (orgs && orgs.length > 0) {
-        setCurrentOrg(orgs[0]);
-      } else {
-        navigate("/onboarding");
-      }
-    }).catch(() => {});
-  }, [currentOrg]);
-
-  if (!currentOrg) {
-    return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-4xl mb-4">⚡</div>
-          <p className="text-white/40">Loading your workspace...</p>
-        </div>
-      </div>
-    );
-  }
+  
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
