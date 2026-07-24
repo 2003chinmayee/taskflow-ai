@@ -150,21 +150,19 @@ public class InvitationService {
 
     private void validateAdminAccess(String orgId, String userId) {
 
-        System.out.println("==================================");
-        System.out.println("DEBUG INVITATION");
-        System.out.println("Org ID  : " + orgId);
-        System.out.println("User ID : " + userId);
+        log.info("========== INVITE DEBUG ==========");
+        log.info("Org ID  : {}", orgId);
+        log.info("User ID : {}", userId);
 
-        java.util.Optional<OrgMember> member =
-                orgMemberRepository.findByOrgIdAndUserIdAndIsActiveTrue(orgId, userId);
+        var member = orgMemberRepository.findByOrgIdAndUserIdAndIsActiveTrue(orgId, userId);
 
-        System.out.println("Member Found : " + member.isPresent());
+        log.info("Member Found : {}", member.isPresent());
 
         if (member.isPresent()) {
-            System.out.println("Role : " + member.get().getRole());
+            log.info("Role : {}", member.get().getRole());
         }
 
-        System.out.println("==================================");
+        log.info("=================================");
 
         OrgMember orgMember = member.orElseThrow(() ->
                 new ForbiddenException("Access denied"));
