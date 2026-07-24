@@ -165,7 +165,10 @@ public class InvitationService {
         log.info("=================================");
 
         OrgMember orgMember = member.orElseThrow(() ->
-                new ForbiddenException("Access denied"));
+                new ForbiddenException(
+                        "Access denied | orgId=" + orgId +
+                                " | userId=" + userId
+                ));
 
         if (orgMember.getRole() != OrgRole.ORG_ADMIN) {
             throw new ForbiddenException("Admin access required");
