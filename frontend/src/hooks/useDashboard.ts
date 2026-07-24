@@ -6,6 +6,9 @@ export function useDashboard() {
   const { currentOrg } = useOrgStore();
   const orgId = currentOrg?.id ?? '';
 
+console.log("Current Organization:", currentOrg);
+console.log("Organization ID:", orgId);
+
   const overviewQuery = useQuery({
     queryKey: ['dashboard-overview', orgId],
     queryFn: () => dashboardApi.overview(orgId).then(res => res.data.data),
