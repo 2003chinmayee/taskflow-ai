@@ -37,7 +37,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const currentOrg = useOrgStore.getState().currentOrg;
+  const currentOrg = useOrgStore((state) => state.currentOrg);
 
   // Authenticated + initialized, but no workspace yet -> onboarding
   if (!currentOrg) {

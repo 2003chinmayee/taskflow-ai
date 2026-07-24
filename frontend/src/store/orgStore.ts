@@ -61,7 +61,10 @@ export const useOrgStore = create<OrgState>()(
     }),
     {
       name: 'taskflow-org',
-      partialize: (state) => ({ currentOrg: state.currentOrg }),
+      partialize: (state) => ({
+  currentOrg: state.currentOrg,
+  isInitialized: state.isInitialized,
+}),
     }
   )
 );

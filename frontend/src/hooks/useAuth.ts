@@ -51,7 +51,7 @@ export const useAuth = () => {
       await login(payload);
       toast.success('Welcome back!');
       const redirect = searchParams.get('redirect');
-      navigate(redirect ? redirect : '/projects');
+      navigate(redirect || "/dashboard");
     } catch {
       // error message is already in store.error
       // we also show a toast for immediate feedback
@@ -65,7 +65,7 @@ export const useAuth = () => {
       await register(payload);
       toast.success('Account created! Welcome to TaskFlow.');
       const redirect = searchParams.get('redirect');
-      navigate(redirect ? redirect : '/projects');
+      navigate(redirect || "/dashboard");
     } catch {
       toast.error(error ?? 'Registration failed. Please try again.');
     }

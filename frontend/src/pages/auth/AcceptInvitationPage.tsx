@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { useAuthStore } from "../../store/auth.store";
 import { organizationApi } from "../../api/organizationApi";
+import { useOrgStore } from "../../store/orgStore";
 
 export default function AcceptInvitationPage() {
   const { token } = useParams<{ token: string }>();
@@ -23,12 +24,24 @@ export default function AcceptInvitationPage() {
     if (hasAttempted.current) return;
     hasAttempted.current = true;
 
-    organizationApi.acceptInvitation(token)
-      .then(() => setStatus("success"))
-      .catch((err) => {
-        setStatus("error");
-        setErrorMsg(err?.response?.data?.message ?? "Failed to accept invitation");
-      });
+    organizationApi
+  .acceptInvitation(token)
+  .then(async () => {
+    // Refresh organizations after joining
+    await useOrgStore.getState().fetchOrganizations();
+
+    setStatus("success");
+
+    setTimeout(() => {
+      navigate("/dashboard", { replace: true });
+    }, 800);
+  })
+  .catch((err) => {
+    setStatus("error");
+    setErrorMsg(
+      err?.response?.data?.message ?? "Failed to accept invitation"
+    );
+  });
   }, [token, isAuthenticated]);
 
   return (
