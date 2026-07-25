@@ -170,8 +170,12 @@ public class InvitationService {
                                 " | userId=" + userId
                 ));
 
-        if (orgMember.getRole() != OrgRole.ORG_ADMIN) {
-            throw new ForbiddenException("Admin access required");
+        if (orgMember.getRole() != OrgRole.OWNER &&
+                orgMember.getRole() != OrgRole.ORG_ADMIN) {
+
+            throw new ForbiddenException(
+                    "Only Owner or Admin can invite members."
+            );
         }
     }
 

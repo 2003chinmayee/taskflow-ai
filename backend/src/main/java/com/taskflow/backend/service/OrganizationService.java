@@ -86,7 +86,7 @@ public class OrganizationService {
     public OrgResponse updateOrganization(String orgId, UpdateOrgRequest request, String userId) {
         Organization org = organizationRepository.findByIdAndIsDeletedFalse(orgId)
                 .orElseThrow(() -> new RuntimeException("Organization not found"));
-        validateAdminAccess(orgId, userId);
+        validateManageMemberPermission(orgId, userId);
         if (request.getName() != null) org.setName(request.getName().trim());
         if (request.getDescription() != null) org.setDescription(request.getDescription());
         if (request.getLogoUrl() != null) org.setLogoUrl(request.getLogoUrl());
@@ -109,7 +109,7 @@ public class OrganizationService {
 
     @Transactional
     public void removeMember(String orgId, String targetUserId, String requestingUserId) {
-        validateAdminAccess(orgId, requestingUserId);
+        validateManageMemberPermission(orgId, requestingUserId);
         Organization org = organizationRepository.findByIdAndIsDeletedFalse(orgId)
                 .orElseThrow(() -> new RuntimeException("Organization not found"));
         if (org.getCreatedBy().equals(targetUserId)) {
@@ -134,7 +134,7 @@ public class OrganizationService {
     @Transactional
     public void changeMemberRole(String orgId, String targetUserId,
                                  OrgRole newRole, String requestingUserId) {
-        validateAdminAccess(orgId, requestingUserId);
+        validateManageMemberPermission(orgId, requestingUserId);
         OrgMember target = orgMemberRepository
                 .findByOrgIdAndUserIdAndIsActiveTrue(orgId, targetUserId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
@@ -177,18 +177,40 @@ public class OrganizationService {
         }
     }
 
-    private void validateAdminAccess(String orgId, String userId) {
-        OrgMember member = orgMemberRepository
+    private OrgMember getCurrentMember(String orgId, String userId) {
+
+        return orgMemberRepository
                 .findByOrgIdAndUserIdAndIsActiveTrue(orgId, userId)
                 .orElseThrow(() -> new ForbiddenException("Access denied"));
-        if (member.getRole() != OrgRole.ORG_ADMIN) {
-            throw new ForbiddenException("Admin access required");
+    }
+
+    private void validateInvitePermission(String orgId, String userId) {
+
+        OrgMember member = getCurrentMember(orgId, userId);
+
+        if (
+                member.getRole() != OrgRole.OWNER &&
+                        member.getRole() != OrgRole.ORG_ADMIN
+        ) {
+            throw new ForbiddenException("Only the Owner or an Organization Admin can invite members.");
+        }
+    }
+
+    private void validateManageMemberPermission(String orgId, String userId) {
+
+        OrgMember member = getCurrentMember(orgId, userId);
+
+        if (
+                member.getRole() != OrgRole.OWNER &&
+                        member.getRole() != OrgRole.ORG_ADMIN
+        ) {
+            throw new ForbiddenException("Only the Owner or an Organization Admin can manage members.");
         }
     }
 
     @Transactional(readOnly = true)
     public List<OrgMemberResponse> getMembers(String orgId, String requestingUserId) {
-        validateAdminAccess(orgId, requestingUserId);
+        validateMembership(orgId, requestingUserId);
         Organization org = organizationRepository.findByIdAndIsDeletedFalse(orgId)
                 .orElseThrow(() -> new RuntimeException("Organization not found"));
 

@@ -30,8 +30,10 @@ public class CalendarService {
     // ── Org-wide access check (ORG_ADMIN / PROJECT_MANAGER) ─────────
     private boolean canAccessAllProjects(String orgId, String userId) {
         return orgMemberRepository.findByOrgIdAndUserIdAndIsActiveTrue(orgId, userId)
-                .map(m -> m.getRole() == com.taskflow.backend.enums.OrgRole.ORG_ADMIN
-                        || m.getRole() == com.taskflow.backend.enums.OrgRole.PROJECT_MANAGER)
+                .map(m ->
+                        m.getRole() == com.taskflow.backend.enums.OrgRole.OWNER
+                                || m.getRole() == com.taskflow.backend.enums.OrgRole.ORG_ADMIN
+                )
                 .orElse(false);
     }
 

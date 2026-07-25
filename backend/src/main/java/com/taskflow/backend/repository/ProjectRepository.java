@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface ProjectRepository extends JpaRepository<Project, String> {
 
-    // ── Full org access (ORG_ADMIN / PROJECT_MANAGER) ──────────────
+    // ── // Full org access (OWNER / ORG_ADMIN)──────────────
     @Query("SELECT p FROM Project p WHERE p.orgId = :orgId AND p.deleted = false")
     Page<Project> findAllProjectsInOrg(@Param("orgId") String orgId, Pageable pageable);
 
