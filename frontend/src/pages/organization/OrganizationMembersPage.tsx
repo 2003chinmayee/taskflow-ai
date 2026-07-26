@@ -52,7 +52,7 @@ export default function OrganizationMembersPage() {
   const [removeConfirm, setRemoveConfirm] = useState<OrgMember | null>(null);
   const [cancelInviteConfirm, setCancelInviteConfirm] = useState<OrgInvitation | null>(null);
 
- const isCurrentUserAdmin =
+const isCurrentUserAdmin =
     currentOrg?.currentUserRole === "ORG_ADMIN" || currentOrg?.currentUserRole === "OWNER";
   const activeAdminCount = members.filter((m) => m.role === "ORG_ADMIN").length;
   const currentMemberRow = members.find((m) => m.userId === currentUser?.id);
@@ -66,17 +66,21 @@ export default function OrganizationMembersPage() {
   };
 
   if (!isCurrentUserAdmin) {
-    return (
-      <div className="min-h-screen bg-zinc-950 text-white">
-        <AppHeader />
-        <div className="flex flex-col items-center justify-center py-24 text-center px-4">
-          <AlertCircle size={28} className="text-red-400 mb-3" />
-          <h2 className="text-white font-semibold text-lg mb-1">Access denied</h2>
-          <p className="text-white/40 text-sm">You need admin access to view this page.</p>
-        </div>
+  return (
+    <div className="min-h-screen bg-zinc-950 text-white">
+      <AppHeader />
+      <div className="flex flex-col items-center justify-center py-24 text-center px-4">
+        <AlertCircle size={28} className="text-red-400 mb-3" />
+        <h2 className="text-white font-semibold text-lg mb-1">
+          Access denied
+        </h2>
+        <p className="text-white/40 text-sm">
+          Only the Organization Owner or Admin can manage members.
+        </p>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
@@ -89,8 +93,10 @@ export default function OrganizationMembersPage() {
             <p className="text-white/40 text-sm mt-1">Manage organization members and invitations</p>
           </div>
           {canInvite && (
-            <button onClick={() => setInviteOpen(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white transition-all flex-shrink-0">
+            <button
+              onClick={() => setInviteOpen(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white transition-all flex-shrink-0"
+            >
               <UserPlus size={15} />
               Invite Member
             </button>
