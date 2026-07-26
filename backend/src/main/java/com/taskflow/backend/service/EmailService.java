@@ -125,6 +125,8 @@ public class EmailService {
         } catch (MessagingException | MailException e) {
 
             log.error("Failed to send email to {}", to, e);
+
+            throw new RuntimeException("Unable to send invitation email", e);
         }
     }
 }
