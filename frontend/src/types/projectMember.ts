@@ -1,4 +1,4 @@
-export type ProjectMemberRole = 'OWNER' | 'MANAGER' | 'MEMBER' | 'VIEWER';
+export type ProjectMemberRole = 'OWNER' | 'PROJECT_MANAGER' | 'DEVELOPER' | 'TESTER' | 'VIEWER';
 
 export interface ProjectMember {
   id: string;
@@ -9,6 +9,10 @@ export interface ProjectMember {
   role: ProjectMemberRole;
   isOwner: boolean;
   joinedAt: string;
+  canCreateTasks: boolean;
+  canEditTasks: boolean;
+  canDeleteTasks: boolean;
+  canManageMembers: boolean;
 }
 
 export interface AvailableMember {

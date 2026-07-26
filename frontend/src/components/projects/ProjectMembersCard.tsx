@@ -9,10 +9,11 @@ import type { ProjectMember } from "../../types/projectMember";
 import type { Task } from "../../types/task";
 
 const ROLE_BADGE: Record<string, { bg: string; text: string }> = {
-  OWNER:   { bg: "bg-amber-500/20",  text: "text-amber-300" },
-  MANAGER: { bg: "bg-blue-500/20",   text: "text-blue-300" },
-  MEMBER:  { bg: "bg-violet-500/20", text: "text-violet-300" },
-  VIEWER:  { bg: "bg-zinc-500/20",   text: "text-zinc-400" },
+  OWNER:           { bg: "bg-amber-500/20",  text: "text-amber-300" },
+  PROJECT_MANAGER: { bg: "bg-blue-500/20",   text: "text-blue-300" },
+  DEVELOPER:       { bg: "bg-violet-500/20", text: "text-violet-300" },
+  TESTER:          { bg: "bg-teal-500/20",   text: "text-teal-300" },
+  VIEWER:          { bg: "bg-zinc-500/20",   text: "text-zinc-400" },
 };
 
 const TASK_STATUS_DOT: Record<string, string> = {
@@ -44,7 +45,7 @@ export default function ProjectMembersCard({ projectId, tasks }: ProjectMembersC
   const [expandedMemberId, setExpandedMemberId] = useState<string | null>(null);
 
   const currentMember = members.find((m) => m.userId === currentUser?.id);
-  const canManage = currentMember?.role === "OWNER" || currentMember?.role === "MANAGER";
+  const canManage = currentMember?.canManageMembers ?? false;
 
   const inviteErrorMessage = (addError as any)?.response?.data?.message ?? null;
 

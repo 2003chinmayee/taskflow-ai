@@ -1,4 +1,4 @@
-export type OrgRole = 'ORG_ADMIN' | 'PROJECT_MANAGER' | 'MEMBER' | 'GUEST';
+export type OrgRole = 'OWNER' | 'ORG_ADMIN' | 'MEMBER' | 'GUEST';
 
 export interface Organization {
   id: string;
@@ -23,6 +23,8 @@ export interface OrgMember {
   role: OrgRole;
   joinedAt: string;
   isOwner: boolean;
+  canInviteMembers: boolean;
+  canManageMembers: boolean;
 }
 
 // Matches backend OrgInvitation.InvitationStatus, plus "EXPIRED"

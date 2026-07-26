@@ -11,10 +11,10 @@ import AppHeader from "../../components/layout/AppHeader";
 import type { OrgMember, OrgInvitation, OrgRole, InvitationStatus } from "../../types/organization";
 
 const ROLE_BADGE: Record<string, { bg: string; text: string }> = {
-  ORG_ADMIN:       { bg: "bg-amber-500/20",  text: "text-amber-300" },
-  PROJECT_MANAGER: { bg: "bg-blue-500/20",   text: "text-blue-300" },
-  MEMBER:          { bg: "bg-violet-500/20", text: "text-violet-300" },
-  GUEST:           { bg: "bg-zinc-500/20",   text: "text-zinc-400" },
+  OWNER:     { bg: "bg-amber-500/20",  text: "text-amber-300" },
+  ORG_ADMIN: { bg: "bg-blue-500/20",   text: "text-blue-300" },
+  MEMBER:    { bg: "bg-violet-500/20", text: "text-violet-300" },
+  GUEST:     { bg: "bg-zinc-500/20",   text: "text-zinc-400" },
 };
 
 const STATUS_BADGE: Record<InvitationStatus, { bg: string; text: string; icon: any }> = {
@@ -24,7 +24,7 @@ const STATUS_BADGE: Record<InvitationStatus, { bg: string; text: string; icon: a
   EXPIRED:  { bg: "bg-red-500/15",    text: "text-red-300",    icon: AlertCircle },
 };
 
-const ORG_ROLES: OrgRole[] = ["ORG_ADMIN", "PROJECT_MANAGER", "MEMBER", "GUEST"];
+const ORG_ROLES: OrgRole[] = ["ORG_ADMIN", "MEMBER", "GUEST"];
 type TabKey = "active" | "pending" | "history";
 
 export default function OrganizationMembersPage() {
@@ -52,9 +52,11 @@ export default function OrganizationMembersPage() {
   const [removeConfirm, setRemoveConfirm] = useState<OrgMember | null>(null);
   const [cancelInviteConfirm, setCancelInviteConfirm] = useState<OrgInvitation | null>(null);
 
-  const isCurrentUserAdmin = currentOrg?.currentUserRole === "ORG_ADMIN";
+ const isCurrentUserAdmin =
+    currentOrg?.currentUserRole === "ORG_ADMIN" || currentOrg?.currentUserRole === "OWNER";
   const activeAdminCount = members.filter((m) => m.role === "ORG_ADMIN").length;
-
+  const currentMemberRow = members.find((m) => m.userId === currentUser?.id);
+  const canInvite = currentMemberRow?.canInviteMembers ?? false;
   const handleInvite = () => {
     if (!inviteEmail.trim()) return;
     inviteMember(
@@ -86,11 +88,13 @@ export default function OrganizationMembersPage() {
             <h1 className="text-2xl font-semibold text-white">Team</h1>
             <p className="text-white/40 text-sm mt-1">Manage organization members and invitations</p>
           </div>
-          <button onClick={() => setInviteOpen(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white transition-all flex-shrink-0">
-            <UserPlus size={15} />
-            Invite Member
-          </button>
+          {canInvite && (
+            <button onClick={() => setInviteOpen(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white transition-all flex-shrink-0">
+              <UserPlus size={15} />
+              Invite Member
+            </button>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-x-1 gap-y-1 mb-6 border-b border-white/8">
@@ -169,7 +173,7 @@ export default function OrganizationMembersPage() {
                       <span className={`md:hidden text-[11px] font-semibold px-2 py-0.5 rounded-full ${badge.bg} ${badge.text}`}>
                         {m.role.replace("_", " ")}
                       </span>
-                      {!isYou && !m.isOwner && (
+                      {!isYou && m.canManageMembers && (
                         <div className="relative flex-shrink-0">
                           <button onClick={() => setOpenMenuId(openMenuId === m.id ? null : m.id)}
                             className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/8 transition-all">

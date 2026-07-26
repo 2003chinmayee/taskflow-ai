@@ -2,8 +2,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { ProjectMember, ProjectMemberRole } from "../../types/projectMember";
 
 const ROLES: { value: ProjectMemberRole; label: string; desc: string }[] = [
-  { value: "MANAGER", label: "Manager", desc: "Can edit project settings and manage members" },
-  { value: "MEMBER", label: "Member", desc: "Can create and edit tasks" },
+  { value: "PROJECT_MANAGER", label: "Project Manager", desc: "Can edit project settings and manage members" },
+  { value: "DEVELOPER", label: "Developer", desc: "Can create and edit assigned tasks" },
+  { value: "TESTER", label: "Tester", desc: "Can update task status and comment" },
   { value: "VIEWER", label: "Viewer", desc: "Read-only access" },
 ];
 

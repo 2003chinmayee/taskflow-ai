@@ -18,7 +18,7 @@ export default function InviteProjectMemberModal({
 }: InviteProjectMemberModalProps) {
   const [search, setSearch] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [role, setRole] = useState<ProjectMemberRole>("MEMBER");
+  const [role, setRole] = useState<ProjectMemberRole>("DEVELOPER");
 
   const filtered = availableMembers.filter(m =>
     m.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -26,7 +26,7 @@ export default function InviteProjectMemberModal({
   );
 
   const handleClose = () => {
-    setSearch(""); setSelectedUserId(null); setRole("MEMBER");
+    setSearch(""); setSelectedUserId(null); setRole("DEVELOPER");
     onClose();
   };
 
@@ -98,15 +98,15 @@ export default function InviteProjectMemberModal({
             {selectedUserId && (
               <div className="mb-4">
                 <label className="text-white/60 text-xs mb-1.5 block">Role</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {(["MEMBER", "MANAGER"] as const).map((r) => (
+                <div className="grid grid-cols-3 gap-2">
+                  {(["DEVELOPER", "TESTER", "PROJECT_MANAGER"] as const).map((r) => (
                     <button key={r} onClick={() => setRole(r)}
                       className={`py-2 rounded-xl text-sm font-medium border transition-all ${
                         role === r
                           ? "bg-violet-500/20 border-violet-500/50 text-violet-300"
                           : "bg-white/4 border-white/8 text-white/50 hover:text-white"
                       }`}>
-                      {r === "MEMBER" ? "Member" : "Manager"}
+                      {r === "DEVELOPER" ? "Developer" : r === "TESTER" ? "Tester" : "Manager"}
                     </button>
                   ))}
                 </div>
