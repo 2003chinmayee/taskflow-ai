@@ -52,6 +52,18 @@ spring:
     suffix: .html
     cache: false
 
+  mail:
+    host: smtp-relay.brevo.com
+    port: 587
+    username: ${BREVO_SMTP_USERNAME}
+    password: ${BREVO_SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 server:
   port: ${PORT:8080}
   error:
@@ -75,7 +87,7 @@ app:
     api-url: https://generativelanguage.googleapis.com/v1beta/models
     timeout-ms: 15000
   mail:
-    from: noreply@taskflowai.com
+    from: ${BREVO_FROM_EMAIL}
 
 management:
   endpoints:
@@ -98,9 +110,5 @@ logging:
     com.taskflow: DEBUG
     org.springframework.security: DEBUG
 
-resend:
-  api:
-    key: ${RESEND_API_KEY}
-  from:
-    email: onboarding@resend.dev
+
 

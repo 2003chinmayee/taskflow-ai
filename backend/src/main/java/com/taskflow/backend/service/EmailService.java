@@ -1,86 +1,130 @@
 package com.taskflow.backend.service;
 
-import com.resend.Resend;
-import com.resend.services.emails.model.CreateEmailOptions;
-import com.resend.services.emails.model.CreateEmailResponse;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
-    private final Resend resend;
-    private final String fromEmail;
+    private final JavaMailSender mailSender;
 
-    public EmailService(
-            @Value("${resend.api.key}") String apiKey,
-            @Value("${resend.from.email}") String fromEmail) {
-        this.resend = new Resend(apiKey);
-        this.fromEmail = fromEmail;
-    }
+    @Value("${app.mail.from}")
+    private String fromEmail;
 
-    public void sendInvitationEmail(String toEmail, String orgName, String inviteLink) {
-        String htmlBody = """
-                <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
-                    <h2 style="color: #6366F1;">You've been invited to join %s</h2>
-                    <p>You've been invited to collaborate on TaskFlow AI.</p>
+    public void sendInvitationEmail(String toEmail,
+                                    String orgName,
+                                    String inviteLink) {
+
+        String html = """
+                <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto">
+                    <h2 style="color:#7C3AED">
+                        You're invited to join %s
+                    </h2>
+
+                    <p>
+                        You've been invited to collaborate on
+                        <strong>TaskFlow AI</strong>.
+                    </p>
+
+                    <p>
+                        Click the button below to accept your invitation.
+                    </p>
+
                     <a href="%s"
-                       style="display: inline-block; padding: 12px 24px; background: #6366F1;
-                              color: white; text-decoration: none; border-radius: 8px; margin-top: 16px;">
+                       style="
+                           display:inline-block;
+                           background:#7C3AED;
+                           color:white;
+                           padding:12px 24px;
+                           text-decoration:none;
+                           border-radius:8px;
+                           margin-top:20px;">
                         Accept Invitation
                     </a>
-                    <p style="color: #888; font-size: 12px; margin-top: 24px;">
+
+                    <p style="margin-top:30px;color:#777">
                         This invitation expires in 7 days.
                     </p>
                 </div>
                 """.formatted(orgName, inviteLink);
 
-        CreateEmailOptions params = CreateEmailOptions.builder()
-                .from(fromEmail)
-                .to(toEmail)
-                .subject("You've been invited to join " + orgName + " on TaskFlow AI")
-                .html(htmlBody)
-                .build();
-
-        try {
-            CreateEmailResponse response = resend.emails().send(params);
-            log.info("Invitation email sent to {} — Resend ID: {}", toEmail, response.getId());
-        } catch (Exception e) {
-            log.error("Failed to send invitation email to {}: {}", toEmail, e.getMessage());
-            // Don't throw — email failure shouldn't block invitation creation
-        }
+        sendHtmlEmail(
+                toEmail,
+                "You're invited to join " + orgName + " on TaskFlow AI",
+                html
+        );
     }
 
-    public void sendPasswordResetEmail(String toEmail, String resetLink) {
-        String htmlBody = """
-                <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
-                    <h2 style="color: #6366F1;">Reset your password</h2>
-                    <p>We received a request to reset your TaskFlow AI password.</p>
+    public void sendPasswordResetEmail(String toEmail,
+                                       String resetLink) {
+
+        String html = """
+                <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto">
+                    <h2 style="color:#7C3AED">
+                        Reset your password
+                    </h2>
+
+                    <p>
+                        Click below to reset your password.
+                    </p>
+
                     <a href="%s"
-                       style="display: inline-block; padding: 12px 24px; background: #6366F1;
-                              color: white; text-decoration: none; border-radius: 8px; margin-top: 16px;">
+                       style="
+                           display:inline-block;
+                           background:#7C3AED;
+                           color:white;
+                           padding:12px 24px;
+                           text-decoration:none;
+                           border-radius:8px;
+                           margin-top:20px;">
                         Reset Password
                     </a>
-                    <p style="color: #888; font-size: 12px; margin-top: 24px;">
-                        This link expires in 1 hour. If you didn't request this, you can ignore this email.
+
+                    <p style="margin-top:30px;color:#777">
+                        This link expires in one hour.
                     </p>
                 </div>
                 """.formatted(resetLink);
 
-        CreateEmailOptions params = CreateEmailOptions.builder()
-                .from(fromEmail)
-                .to(toEmail)
-                .subject("Reset your TaskFlow AI password")
-                .html(htmlBody)
-                .build();
+        sendHtmlEmail(
+                toEmail,
+                "Reset your TaskFlow AI password",
+                html
+        );
+    }
+
+    private void sendHtmlEmail(String to,
+                               String subject,
+                               String html) {
 
         try {
-            CreateEmailResponse response = resend.emails().send(params);
-            log.info("Password reset email sent to {} — Resend ID: {}", toEmail, response.getId());
-        } catch (Exception e) {
-            log.error("Failed to send password reset email to {}: {}", toEmail, e.getMessage());
+
+            MimeMessage message = mailSender.createMimeMessage();
+
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(html, true);
+
+            mailSender.send(message);
+
+            log.info("Email sent successfully to {}", to);
+
+        } catch (MessagingException | MailException e) {
+
+            log.error("Failed to send email to {}", to, e);
         }
     }
 }
