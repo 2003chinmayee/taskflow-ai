@@ -134,7 +134,7 @@ public class TaskAttachmentService {
 
         boolean isUploader = attachment.getUploadedBy().equals(userId);
         boolean isModerator = member.getRole() == ProjectMemberRole.OWNER
-                || member.getRole() == ProjectMemberRole.MANAGER;
+                || member.getRole() == ProjectMemberRole.PROJECT_MANAGER;
 
         if (!isUploader && !isModerator) {
             throw new ForbiddenException("You cannot delete this attachment");

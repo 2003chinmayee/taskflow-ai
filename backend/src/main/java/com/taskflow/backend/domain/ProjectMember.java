@@ -29,7 +29,7 @@ public class ProjectMember {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
-    private ProjectMemberRole role = ProjectMemberRole.MEMBER;
+    private ProjectMemberRole role = ProjectMemberRole.DEVELOPER;
 
     @Column(name = "is_active")
     @Builder.Default

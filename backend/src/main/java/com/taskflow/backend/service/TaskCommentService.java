@@ -136,7 +136,7 @@ public class TaskCommentService {
 
         boolean isAuthor = comment.getAuthorId().equals(userId);
         boolean isModerator = member.getRole() == ProjectMemberRole.OWNER
-                || member.getRole() == ProjectMemberRole.MANAGER;
+                || member.getRole() == ProjectMemberRole.PROJECT_MANAGER;
 
         if (!isAuthor && !isModerator) {
             throw new RuntimeException("You cannot delete this comment");

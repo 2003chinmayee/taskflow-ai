@@ -10,5 +10,5 @@ public class AddProjectMemberRequest {
     @NotBlank(message = "User ID is required")
     private String userId;
 
-    private ProjectMemberRole role = ProjectMemberRole.MEMBER;
+    private ProjectMemberRole role = ProjectMemberRole.DEVELOPER;
 }

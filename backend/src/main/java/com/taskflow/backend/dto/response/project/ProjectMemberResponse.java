@@ -17,4 +17,8 @@ public class ProjectMemberResponse {
     private ProjectMemberRole role;
     private boolean isOwner;
     private LocalDateTime joinedAt;
+    private boolean canCreateTasks;
+    private boolean canEditTasks;
+    private boolean canDeleteTasks;
+    private boolean canManageMembers;
 }

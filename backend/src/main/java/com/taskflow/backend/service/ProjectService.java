@@ -295,9 +295,10 @@ public class ProjectService {
         if (!project.getOwnedBy().equals(requestingUserId))
             throw new RuntimeException("Only current owner can transfer ownership");
 
-        // Update old owner role to MANAGER
+
+// Update old owner role to PROJECT_MANAGER
         projectMemberRepository.findByProjectIdAndUserIdAndActiveTrue(projectId, requestingUserId)
-                .ifPresent(m -> { m.setRole(ProjectMemberRole.MANAGER); projectMemberRepository.save(m); });
+                .ifPresent(m -> { m.setRole(ProjectMemberRole.PROJECT_MANAGER); projectMemberRepository.save(m); });
 
         // New owner must already be a member
         ProjectMember newOwner = projectMemberRepository
@@ -314,17 +315,24 @@ public class ProjectService {
 
     @Transactional(readOnly = true)
     public List<ProjectMemberResponse> getMembers(String projectId, String userId) {
-        validateAccess(projectId, userId, findProject(projectId));
+        Project project = findProject(projectId);
+        validateAccess(projectId, userId, project);
         return projectMemberRepository.findByProjectIdAndActiveTrue(projectId).stream()
                 .map(pm -> {
                     User user = userRepository.findById(pm.getUserId()).orElse(null);
+                    boolean[] perms = resolvePermissions(pm.getRole());
                     return ProjectMemberResponse.builder()
                             .id(pm.getId())
                             .userId(pm.getUserId())
                             .name(user != null ? user.getName() : "Unknown")
                             .email(user != null ? user.getEmail() : "")
                             .role(pm.getRole())
+                            .isOwner(project.getOwnedBy().equals(pm.getUserId()))
                             .joinedAt(pm.getJoinedAt())
+                            .canCreateTasks(perms[0])
+                            .canEditTasks(perms[1])
+                            .canDeleteTasks(perms[2])
+                            .canManageMembers(perms[3])
                             .build();
                 }).collect(Collectors.toList());
     }
@@ -348,8 +356,19 @@ public class ProjectService {
         ProjectMember member = projectMemberRepository
                 .findByProjectIdAndUserIdAndActiveTrue(projectId, userId)
                 .orElseThrow(() -> new RuntimeException("Access denied"));
-        if (member.getRole() == ProjectMemberRole.VIEWER || member.getRole() == ProjectMemberRole.MEMBER)
+        if (member.getRole() != ProjectMemberRole.OWNER && member.getRole() != ProjectMemberRole.PROJECT_MANAGER)
             throw new RuntimeException("Manager or Owner access required");
+    }
+
+    private boolean[] resolvePermissions(ProjectMemberRole role) {
+        // [canCreateTasks, canEditTasks, canDeleteTasks, canManageMembers]
+        if (role == ProjectMemberRole.OWNER || role == ProjectMemberRole.PROJECT_MANAGER) {
+            return new boolean[]{true, true, true, true};
+        }
+        if (role == ProjectMemberRole.DEVELOPER) {
+            return new boolean[]{true, true, false, false};
+        }
+        return new boolean[]{false, false, false, false}; // TESTER, VIEWER
     }
 
     private ProjectResponse toResponse(Project p, String userId) {

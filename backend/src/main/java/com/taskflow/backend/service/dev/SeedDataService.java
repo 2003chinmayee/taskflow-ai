@@ -124,11 +124,11 @@ public class SeedDataService {
                 "Core SaaS platform launch: authentication, workspaces, task management, and AI assistant.");
         created.add("Project: TaskFlow SaaS Launch");
 
-        addProjectMember(project1Id, userIds.get("chinmayee"), userIds.get("aarav"), ProjectMemberRole.MANAGER);
-        addProjectMember(project1Id, userIds.get("chinmayee"), userIds.get("priya"), ProjectMemberRole.MEMBER);
-        addProjectMember(project1Id, userIds.get("chinmayee"), userIds.get("rohan"), ProjectMemberRole.MEMBER);
-        addProjectMember(project1Id, userIds.get("chinmayee"), userIds.get("sneha"), ProjectMemberRole.MEMBER);
-        addProjectMember(project1Id, userIds.get("chinmayee"), userIds.get("kavya"), ProjectMemberRole.MEMBER);
+        addProjectMember(project1Id, userIds.get("chinmayee"), userIds.get("aarav"), ProjectMemberRole.PROJECT_MANAGER);
+        addProjectMember(project1Id, userIds.get("chinmayee"), userIds.get("priya"), ProjectMemberRole.DEVELOPER);
+        addProjectMember(project1Id, userIds.get("chinmayee"), userIds.get("rohan"), ProjectMemberRole.DEVELOPER);
+        addProjectMember(project1Id, userIds.get("chinmayee"), userIds.get("sneha"), ProjectMemberRole.DEVELOPER);
+        addProjectMember(project1Id, userIds.get("chinmayee"), userIds.get("kavya"), ProjectMemberRole.DEVELOPER);
         addProjectMember(project1Id, userIds.get("chinmayee"), userIds.get("neha"), ProjectMemberRole.VIEWER);
         created.add("Project 1 memberships added");
 
@@ -140,11 +140,11 @@ public class SeedDataService {
                 "Native mobile companion app: authentication, offline sync, and push notifications.");
         created.add("Project: Mobile App Companion");
 
-        addProjectMember(project2Id, userIds.get("chinmayee"), userIds.get("priya"), ProjectMemberRole.MANAGER);
-        addProjectMember(project2Id, userIds.get("chinmayee"), userIds.get("aarav"), ProjectMemberRole.MEMBER);
-        addProjectMember(project2Id, userIds.get("chinmayee"), userIds.get("sneha"), ProjectMemberRole.MEMBER);
-        addProjectMember(project2Id, userIds.get("chinmayee"), userIds.get("aditya"), ProjectMemberRole.MEMBER);
-        addProjectMember(project2Id, userIds.get("chinmayee"), userIds.get("rahul"), ProjectMemberRole.MEMBER);
+        addProjectMember(project2Id, userIds.get("chinmayee"), userIds.get("priya"), ProjectMemberRole.PROJECT_MANAGER);
+        addProjectMember(project2Id, userIds.get("chinmayee"), userIds.get("aarav"), ProjectMemberRole.DEVELOPER);
+        addProjectMember(project2Id, userIds.get("chinmayee"), userIds.get("sneha"), ProjectMemberRole.DEVELOPER);
+        addProjectMember(project2Id, userIds.get("chinmayee"), userIds.get("aditya"), ProjectMemberRole.DEVELOPER);
+        addProjectMember(project2Id, userIds.get("chinmayee"), userIds.get("rahul"), ProjectMemberRole.DEVELOPER);
         addProjectMember(project2Id, userIds.get("chinmayee"), userIds.get("vikram"), ProjectMemberRole.VIEWER);
         created.add("Project 2 memberships added");
 

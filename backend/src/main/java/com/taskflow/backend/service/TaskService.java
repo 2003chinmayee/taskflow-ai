@@ -208,7 +208,7 @@ public class TaskService {
     private void validateCanEditTask(String projectId, String userId, Task task) {
         ProjectMember member = requireProjectMember(projectId, userId);
 
-        if (member.getRole() == ProjectMemberRole.OWNER || member.getRole() == ProjectMemberRole.MANAGER) {
+        if (member.getRole() == ProjectMemberRole.OWNER || member.getRole() == ProjectMemberRole.PROJECT_MANAGER) {
             return;
         }
         if (member.getRole() == ProjectMemberRole.VIEWER) {

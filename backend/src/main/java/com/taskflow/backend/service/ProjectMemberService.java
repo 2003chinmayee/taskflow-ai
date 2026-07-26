@@ -70,7 +70,7 @@ public class ProjectMemberService {
             throw new RuntimeException("User is already a member of this project");
         }
 
-        ProjectMemberRole role = request.getRole() != null ? request.getRole() : ProjectMemberRole.MEMBER;
+        ProjectMemberRole role = request.getRole() != null ? request.getRole() : ProjectMemberRole.DEVELOPER;
 
         ProjectMember member = ProjectMember.builder()
                 .id(UUID.randomUUID().toString())
@@ -181,9 +181,6 @@ public class ProjectMemberService {
         User user = userRepository.findById(userId).orElse(null);
         activityService.log(projectId, requesterId, ActivityType.MEMBER_ROLE_CHANGED,
                 (user != null ? user.getName() : "A member") + "'s role was changed to " + request.getRole());
-
-        notificationService.notifyProjectRoleChanged(userId, requesterId, projectId, project.getName(), request.getRole().name());
-
         return toResponse(saved, user, projectId);
     }
 
@@ -200,9 +197,20 @@ public class ProjectMemberService {
                 .orElseThrow(() -> new RuntimeException("You are not a member of this project"));
 
         if (member.getRole() != ProjectMemberRole.OWNER &&
-                member.getRole() != ProjectMemberRole.MANAGER) {
+                member.getRole() != ProjectMemberRole.PROJECT_MANAGER) {
             throw new RuntimeException("You don't have permission to manage members");
         }
+    }
+
+    private boolean[] resolvePermissions(ProjectMemberRole role) {
+        // [canCreateTasks, canEditTasks, canDeleteTasks, canManageMembers]
+        if (role == ProjectMemberRole.OWNER || role == ProjectMemberRole.PROJECT_MANAGER) {
+            return new boolean[]{true, true, true, true};
+        }
+        if (role == ProjectMemberRole.DEVELOPER) {
+            return new boolean[]{true, true, false, false};
+        }
+        return new boolean[]{false, false, false, false}; // TESTER, VIEWER
     }
 
     private void updateMemberCount(Project project) {
@@ -214,6 +222,7 @@ public class ProjectMemberService {
     private ProjectMemberResponse toResponse(ProjectMember pm, User user, String projectId) {
         Project project = projectRepository.findByIdAndDeletedFalse(projectId).orElse(null);
         boolean isOwner = project != null && project.getOwnedBy().equals(pm.getUserId());
+        boolean[] perms = resolvePermissions(pm.getRole());
         return ProjectMemberResponse.builder()
                 .id(pm.getId())
                 .userId(pm.getUserId())
@@ -223,6 +232,10 @@ public class ProjectMemberService {
                 .role(pm.getRole())
                 .isOwner(isOwner)
                 .joinedAt(pm.getJoinedAt())
+                .canCreateTasks(perms[0])
+                .canEditTasks(perms[1])
+                .canDeleteTasks(perms[2])
+                .canManageMembers(perms[3])
                 .build();
     }
 }

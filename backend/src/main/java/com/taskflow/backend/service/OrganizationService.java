@@ -214,9 +214,26 @@ public class OrganizationService {
         Organization org = organizationRepository.findByIdAndIsDeletedFalse(orgId)
                 .orElseThrow(() -> new RuntimeException("Organization not found"));
 
+        OrgMember requester = getCurrentMember(orgId, requestingUserId);
+        boolean requesterIsOwner = requester.getRole() == OrgRole.OWNER;
+        boolean requesterIsAdmin = requester.getRole() == OrgRole.ORG_ADMIN;
+        boolean canInviteMembers = requesterIsOwner || requesterIsAdmin;
+
         return orgMemberRepository.findByOrgIdAndIsActiveTrue(orgId).stream()
                 .map(m -> {
                     User user = userRepository.findById(m.getUserId()).orElse(null);
+                    boolean targetIsOwnerRow = org.getCreatedBy().equals(m.getUserId());
+
+                    boolean canManageThisMember;
+                    if (requesterIsOwner) {
+                        canManageThisMember = !targetIsOwnerRow;
+                    } else if (requesterIsAdmin) {
+                        canManageThisMember = m.getRole() == OrgRole.MEMBER
+                                || m.getRole() == OrgRole.GUEST;
+                    } else {
+                        canManageThisMember = false;
+                    }
+
                     return OrgMemberResponse.builder()
                             .id(m.getId())
                             .userId(m.getUserId())
@@ -225,7 +242,9 @@ public class OrganizationService {
                             .avatarUrl(user != null ? user.getAvatarUrl() : null)
                             .role(m.getRole())
                             .joinedAt(m.getJoinedAt())
-                            .isOwner(org.getCreatedBy().equals(m.getUserId()))
+                            .isOwner(targetIsOwnerRow)
+                            .canInviteMembers(canInviteMembers)
+                            .canManageMembers(canManageThisMember)
                             .build();
                 })
                 .toList();

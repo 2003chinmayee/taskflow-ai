@@ -17,4 +17,6 @@ public class OrgMemberResponse {
     private OrgRole role;
     private LocalDateTime joinedAt;
     private boolean isOwner;
+    private boolean canInviteMembers;
+    private boolean canManageMembers;
 }
